@@ -1,0 +1,24 @@
+payload:
+  - DOMAIN-SUFFIX,cdninstagram.com
+  - DOMAIN-SUFFIX,chatgpt.com
+  - DOMAIN-SUFFIX,facebook.com
+  - DOMAIN-SUFFIX,fbcdn.net
+  - DOMAIN-SUFFIX,googlevideo.com
+  - DOMAIN-SUFFIX,instagram.com
+  - DOMAIN-SUFFIX,onlyfans.com
+  - DOMAIN-SUFFIX,openai.com
+  - DOMAIN-SUFFIX,pornhub.com
+  - DOMAIN-SUFFIX,reddit.com
+  - DOMAIN-SUFFIX,redtube.com
+  - DOMAIN-SUFFIX,t.me
+  - DOMAIN-SUFFIX,telegram.org
+  - DOMAIN-SUFFIX,twitter.com
+  - DOMAIN-SUFFIX,whatsapp.com
+  - DOMAIN-SUFFIX,whatsapp.net
+  - DOMAIN-SUFFIX,x.com
+  - DOMAIN-SUFFIX,xhamster.com
+  - DOMAIN-SUFFIX,xnxx.com
+  - DOMAIN-SUFFIX,xvideos.com
+  - DOMAIN-SUFFIX,youporn.com
+  - DOMAIN-SUFFIX,youtube.com
+  - DOMAIN-SUFFIX,ytimg.com
