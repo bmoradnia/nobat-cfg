@@ -10,6 +10,11 @@
 mixed-port: 7890
 allow-lan: false
 mode: rule
+geodata-mode: true
+geo-auto-update: true
+geox-url:
+  geosite: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geosite.dat"
+  geoip: "https://github.com/MetaCubeX/meta-rules-dat/releases/download/latest/geoip.dat"
 log-level: warning
 ipv6: false
 unified-delay: true
@@ -82,6 +87,7 @@ rules:
   - DOMAIN-SUFFIX,stats.nobat.ir,DIRECT
   - DOMAIN-SUFFIX,nobatcdn.ir,DIRECT
   # --- domestic networks
+  - GEOSITE,category-ir,DIRECT
   - GEOIP,IR,DIRECT
   - DOMAIN-SUFFIX,ir,DIRECT
   - DOMAIN-SUFFIX,arvanedge.ir,DIRECT
