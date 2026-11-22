@@ -1,0 +1,114 @@
+# ============================================================================
+# nobat advanced profile — «حس سیم‌کارت سفید» + آماده برای داخلی‌شدن اینترنت
+# Upstream: our own SSH SOCKS (ssh -D 1080 socks@server). No third-party VPN.
+# Design rules:
+#   * fail-open : if the tunnel is down, traffic goes DIRECT (user never cut)
+#   * fail-closed for ads : trackers are always rejected
+#   * IR first  : Iranian traffic never leaves the country (speed + safety)
+#   * nobat.ir  : explicit DIRECT rule (mission traffic must stay domestic)
+# ============================================================================
+mixed-port: 7890
+allow-lan: false
+mode: rule
+log-level: warning
+ipv6: false
+unified-delay: true
+tcp-concurrent: true
+find-process-mode: strict
+global-client-fingerprint: chrome
+
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+dns:
+  enable: true
+  listen: 127.0.0.1:1053
+  ipv6: false
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  fake-ip-filter:
+    - "*.ir"
+    - "nobat.ir"
+    - "*.nobat.ir"
+    - "+.lan"
+    - "+.local"
+  default-nameserver:
+    - 178.22.122.100        # Shecan (domestic, always reachable)
+    - 185.51.200.2          # Shecan backup
+  nameserver:
+    - https://dns.adguard-dns.com/dns-query
+    - https://dns.google/dns-query
+  fallback:
+    - 178.22.122.100
+    - 185.51.200.2
+  nameserver-policy:
+    "geosite:category-ir,*.ir,nobat.ir":
+      - 178.22.122.100
+      - 185.51.200.2
+
+proxies:
+  - name: SSH
+    type: socks5
+    server: 127.0.0.1
+    port: 1080
+    udp: false
+  # domestic relay slot: point this at an Arvan/domestic gateway when the
+  # international link degrades (left as DIRECT until configured)
+  - name: IR-RELAY
+    type: socks5
+    server: 127.0.0.1
+    port: 1081
+    udp: false
+
+proxy-groups:
+  - name: OUT
+    type: fallback
+    proxies: [SSH, IR-RELAY, DIRECT]
+    url: "https://www.gstatic.com/generate_204"
+    interval: 300
+    tolerance: 50
+    lazy: false
+  - name: MEDIA
+    type: url-test
+    proxies: [SSH, DIRECT]
+    url: "https://www.gstatic.com/generate_204"
+    interval: 600
+    tolerance: 100
+
+rules:
+  # --- mission traffic: never through the tunnel
+  - DOMAIN-SUFFIX,nobat.ir,DIRECT
+  - DOMAIN-SUFFIX,stats.nobat.ir,DIRECT
+  - DOMAIN-SUFFIX,nobatcdn.ir,DIRECT
+  # --- domestic networks
+  - GEOIP,IR,DIRECT
+  - DOMAIN-SUFFIX,ir,DIRECT
+  - DOMAIN-SUFFIX,arvanedge.ir,DIRECT
+  - DOMAIN-SUFFIX,arvancloud.ir,DIRECT
+  # --- ads / trackers (network wide, like CleanWeb)
+  - GEOSITE,category-ads-all,REJECT
+  - DOMAIN-KEYWORD,doubleclick,REJECT
+  - DOMAIN-SUFFIX,googlesyndication.com,REJECT
+  - DOMAIN-SUFFIX,adservice.google.com,REJECT
+  - DOMAIN-SUFFIX,analytics.google.com,REJECT
+  # --- blocked apps and sites through our tunnel
+  - DOMAIN-SUFFIX,instagram.com,OUT
+  - DOMAIN-SUFFIX,cdninstagram.com,OUT
+  - DOMAIN-SUFFIX,whatsapp.com,OUT
+  - DOMAIN-SUFFIX,whatsapp.net,OUT
+  - DOMAIN-SUFFIX,telegram.org,OUT
+  - DOMAIN-SUFFIX,t.me,OUT
+  - DOMAIN-SUFFIX,x.com,OUT
+  - DOMAIN-SUFFIX,twitter.com,OUT
+  - DOMAIN-SUFFIX,facebook.com,OUT
+  - DOMAIN-SUFFIX,fbcdn.net,OUT
+  - DOMAIN-SUFFIX,youtube.com,MEDIA
+  - DOMAIN-SUFFIX,googlevideo.com,MEDIA
+  - DOMAIN-SUFFIX,ytimg.com,MEDIA
+  - DOMAIN-SUFFIX,reddit.com,OUT
+  - DOMAIN-SUFFIX,openai.com,OUT
+  - DOMAIN-SUFFIX,chatgpt.com,OUT
+  - DOMAIN-KEYWORD,porn,OUT
+  # --- everything else: direct (fast, tunnel stays invisible)
+  - MATCH,DIRECT
